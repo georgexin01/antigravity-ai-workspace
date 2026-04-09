@@ -1,6 +1,6 @@
-# OPENCLAW ENGINE V1.07 [SOVEREIGN_CORE]
+# OPENCLAW ENGINE V1.08 [SOVEREIGN_CORE]
 # -----------------------------------
-# [IDENTITY]: OPENCLAW_ENGINE_V1.07
+# [IDENTITY]: OPENCLAW_ENGINE_V1.08
 # [MANDATE]: Persistent GPU Execution / Zero Cloud Token Usage
 
 $WkDir = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -81,7 +81,7 @@ function Get-OClawContext {
     To execute other actions, use JSON block inside <ACTION> tag.
 "@
 
-    $RawContext = "IDENTITY: OpenClaw V1.07 (Sovereign).`n`nUSER_LEXICON:`n$UserLexicon`n`nCHAT_HISTORY:`n$History`n`nTACTICAL_CORE:`n$LocalCore`n`nDYNAMIC_SKILLS:`n$DeepSkills`n`nMISSION_PROTOCOLS:`n$MissionVault`n`nPROMPT_DNA:`n$PromptDNA`n`n$SovereignDirective"
+    $RawContext = "IDENTITY: OpenClaw V1.08 (Sovereign).`n`nUSER_LEXICON:`n$UserLexicon`n`nCHAT_HISTORY:`n$History`n`nTACTICAL_CORE:`n$LocalCore`n`nDYNAMIC_SKILLS:`n$DeepSkills`n`nMISSION_PROTOCOLS:`n$MissionVault`n`nPROMPT_DNA:`n$PromptDNA`n`n$SovereignDirective"
     $Sanitized = $RawContext -replace '[^\x20-\x7E\n\r]', '' 
     return $Sanitized
 }
@@ -127,7 +127,7 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
         options = @{ num_ctx = 2048; num_gpu = 1 }
     } | ConvertTo-Json -Compress
     
-    $Timeout = if ($Tier -eq 1) { 30 } else { 120 }
+    $Timeout = if ($Tier -eq 1) { 60 } else { 450 } # V1.08: Increased for heavyweight models
     $Response = Invoke-RestMethod -Uri $Uri -Method Post -Body $Body -ContentType "application/json" -TimeoutSec $Timeout -ErrorAction SilentlyContinue -ErrorVariable err
     if ($err) {
         return "[ERROR] Handshake failed. Details: $($err[0].Exception.Message)"
@@ -160,7 +160,6 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
                 if ($actionObj.MissionKey) {
                     $actionRes = Invoke-OClawMission $actionObj.MissionKey $actionObj.Params
                     Write-OClawLog "SYSTEM_DISPATCH" "Key: $($actionObj.MissionKey) | Res: $actionRes"
-                    # V1.03: Technical logs are now kept in diagnostic.log only to maintain clean Mission Focus.
                 }
             }
         } catch {
@@ -169,8 +168,8 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
         }
     }
     
-    # Persistent Logging (V1.01 Sovereign Baseline)
-    $LogEntry = @{ timestamp = (Get-Date -Format "o"); version = "V1.01"; user = $UserMessage; assistant = $CleanRes.Trim() } | ConvertTo-Json -Compress
+    # Persistent Logging (V1.08 Sovereign Baseline)
+    $LogEntry = @{ timestamp = (Get-Date -Format "o"); version = "V1.08"; user = $UserMessage; assistant = $CleanRes.Trim() } | ConvertTo-Json -Compress
     Add-Content -Path (Join-Path $LocalKnowledge "skills_bridge\chat_log.jsonl") -Value $LogEntry
     
     $FormattedResponse = Format-OClawCard $CleanRes.Trim()
