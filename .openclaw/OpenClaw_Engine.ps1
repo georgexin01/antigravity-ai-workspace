@@ -84,10 +84,11 @@ function Format-OClawCard([string]$RawText) {
     $CleanText = $RawText -replace "\(Gemma-2B:Fast\) ", ""
     
     # Emoji Intelligence Injection (Zeta Red Palette)
-    $Result = $CleanText -replace "### SUCCESS", "### [🟥] SUCCESS" `
-                         -replace "### BLOCKER", "### [⛔] BLOCKER" `
-                         -replace "### INSIGHT", "### [🔘] INSIGHT" `
-                         -replace "### MISSION", "### [🔴] MISSION"
+    # Using Unicode escapes for better file encoding compatibility
+    $Result = $CleanText -replace "### SUCCESS", "### [$([char]0xD83D)$([char]0xDFE5)] SUCCESS" `
+                         -replace "### BLOCKER", "### [$([char]0x26D4)] BLOCKER" `
+                         -replace "### INSIGHT", "### [$([char]0x1F518)] INSIGHT" `
+                         -replace "### MISSION", "### [$([char]0x1F534)] MISSION"
                          
     return $Result
 }
@@ -129,7 +130,11 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
     $GpuRes = if ($raw) { $raw | ConvertFrom-Json } else { $null }
     $Telemetry = if ($GpuRes) { "[GPU: $($GpuRes.Utilization)% | VRAM: $($GpuRes.UsedPercent)%] " } else { "" }
 
-    $Badge = if ($Model -eq "gemma:2b") { "($($Telemetry)Gemma-2B:Fast)" } else { "($($Telemetry)Gemma-4:Heavy)" }
+    if ($Model -eq "gemma:2b") {
+        $Badge = "($($Telemetry)Gemma-2B:Fast)"
+    } else {
+        $Badge = "($($Telemetry)Gemma-4:Heavy)"
+    }
     
     # Cognitive Filter: Strip internal monologue
     $RawRes = $Response.response
