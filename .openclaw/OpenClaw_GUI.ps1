@@ -1,8 +1,8 @@
-# OPENCLAW KINETIC GUI V33.0 [HARDENED]
+# OPENCLAW SOVEREIGN V1.00
 # -----------------------------------------------------
-# [AESTHETIC]: Liquid Glass (Dynamic Bubbles / Adaptive Blur)
-# [TECH]: Win32 Native Portal / Integrity Verified
-# [STATUS]: Sovereign Hardening Complete
+# [AESTHETIC]: Liquid Glass (Zeta Red / Deep Zinc)
+# [TECH]: Win32 Native Portal / Sovereign Core
+# [STATUS]: Version Reset Active (04-10-2026)
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -34,7 +34,7 @@ $Color_Glass = [System.Drawing.Color]::FromArgb(180, 5, 5, 5) # Layered Depth
 # 3. GHOST SHELL ASSEMBLY
 # -----------------------------------------------------
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Zeta Sovereign V45.0"
+$form.Text = "Zeta Sovereign V1.00"
 $form.Size = New-Object System.Drawing.Size(875, 665)
 $form.BackColor = $Color_DeepBlack
 $form.FormBorderStyle = "None"
@@ -315,15 +315,18 @@ function Remove-Bubble($id) {
 $btnDelete.Add_Click({ 
         $chatView.Document.GetElementById("container").InnerHtml = "" 
         [System.Media.SystemSounds]::Beep.Play()
+        & powershell -ExecutionPolicy Bypass -Command { . '$EnginePath'; Write-OClawLog "GUI_ACTION" "CLEAR_CHAT" }
     })
 
 $btnSync.Add_Click({
         Add-Bubble "SYSTEM SYNC" "Synchronizing Sovereignty to Repository..." "SYSTEM"
+        & powershell -ExecutionPolicy Bypass -Command { . '$EnginePath'; Write-OClawLog "GUI_ACTION" "GIT_SYNC_START" }
         Start-Process "powershell" "-ExecutionPolicy Bypass -Command { . '$EnginePath'; Invoke-OClawSkill 'Sovereign_GitSync' }"
     })
 
 $btnBrain.Add_Click({
         Add-Bubble "NEURAL AUDIT" "Interrogating local brain for architectural metadata..." "SYSTEM"
+        & powershell -ExecutionPolicy Bypass -Command { . '$EnginePath'; Write-OClawLog "GUI_ACTION" "BRAIN_AUDIT_START" }
         $psJob = [powershell]::Create()
         [void]$psJob.AddScript({ param($p); . $p; Invoke-OClawModelInfo }).AddArgument($EnginePath)
         $asyncRes = $psJob.BeginInvoke()
@@ -335,6 +338,7 @@ $btnBrain.Add_Click({
 
 $btnMission.Add_Click({
         Add-Bubble "MISSION TRIGGER" "Tactical Wave initiated." "MISSION"
+        & powershell -ExecutionPolicy Bypass -Command { . '$EnginePath'; Write-OClawLog "GUI_ACTION" "MISSION_START" "RESOLVE_FAUCET" }
         Start-Process "powershell" "-ExecutionPolicy Bypass -Command { . '$EnginePath'; Invoke-OClawMission 'RESOLVE_FAUCET' }"
     })
 
@@ -346,29 +350,40 @@ $SendAction = {
         Add-Bubble "COGNITIVE SYNC" "<span class='spinner'>⚙️</span> Delegating to local brain... Analyzing context." "SOVEREIGN" "thinking_bubble"
         
         # Async Background Execution (Non-Blocking)
+        & powershell -ExecutionPolicy Bypass -Command { . '$EnginePath'; Write-OClawLog "MESSAGE_DISPATCH" "User: $msg" }
         $psJob = [powershell]::Create()
         [void]$psJob.AddScript({ 
             param($m, $p) 
             try {
-                # Source the engine and invoke query
                 . $p
-                $ans = Invoke-OClawQuery $m 1
-                return $ans
+                return Invoke-OClawQuery $m 1
             } catch {
                 return "### [X] ENGINE_CRASH: $($_.Exception.Message)"
             }
         }).AddArgument($msg).AddArgument($EnginePath)
         
         $asyncRes = $psJob.BeginInvoke()
+        $timer = [System.Diagnostics.Stopwatch]::StartNew()
+        $stallDetected = $false
         
-        # Event Loop while waiting
+        # Event Loop with 150s Watchdog
         while (-not $asyncRes.IsCompleted) { 
             [System.Windows.Forms.Application]::DoEvents()
             Start-Sleep -Milliseconds 200 
+            if ($timer.Elapsed.TotalSeconds -gt 150) {
+                $stallDetected = $true
+                break
+            }
         }
         
-        $resObj = $psJob.EndInvoke($asyncRes)
-        $res = if ($resObj) { $resObj -join "`n" } else { "### [!] TIMEOUT: Engine failed to materialize response." }
+        if ($stallDetected) {
+            $psJob.Stop()
+            $res = "### [X] MISSION_STALL: Engine failed to respond within 150 seconds. Hardware pressure may be too high."
+            & powershell -ExecutionPolicy Bypass -Command { . '$EnginePath'; Write-OClawLog "CRITICAL_FAILURE" "WATCHDOG_TIMEOUT" }
+        } else {
+            $resObj = $psJob.EndInvoke($asyncRes)
+            $res = if ($resObj) { $resObj -join "`n" } else { "### [!] TIMEOUT: Engine returned null." }
+        }
         $psJob.Dispose()
         
         Remove-Bubble "thinking_bubble"
@@ -399,7 +414,7 @@ $form.Add_Shown({
         Start-Sleep -Milliseconds 200
         $chatView.Document.InvokeScript("updateProgress", @(100, "READY."))
         
-        Add-Bubble "ZETA SOVEREIGN V45.0 ONLINE" "Brain: Gemma4:e2b (7.2GB) Ready | Atmosphere: ACTIVE | Design DNA: Zeta Core (Red/Black)" "SUCCESS"
+        Add-Bubble "ZETA SOVEREIGN V1.00 ONLINE" "Brain: Gemma4:e2b (7.2GB) Ready | Atmosphere: ACTIVE | Design DNA: Zeta Core (Red/Black)" "SUCCESS"
     })
 
 $form.ShowDialog() | Out-Null

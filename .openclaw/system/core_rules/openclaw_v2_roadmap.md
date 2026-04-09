@@ -1,4 +1,4 @@
-# OpenClaw Sovereign V2.0: The Singularity Roadmap
+# OpenClaw Sovereign V1.0: The Singularity Roadmap
 
 > [!IMPORTANT]
 > **Vision**: Transition from "Task Execution" to "Autonomous Evolution."

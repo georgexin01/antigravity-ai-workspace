@@ -1,11 +1,18 @@
-# OPENCLAW ENGINE V33.0 [SOVEREIGN_CORE]
+# OPENCLAW ENGINE V1.00 [SOVEREIGN_CORE]
 # -----------------------------------
-# [IDENTITY]: OPENCLAW_ENGINE_33.0
+# [IDENTITY]: OPENCLAW_ENGINE_V1.00
 # [MANDATE]: Persistent GPU Execution / Zero Cloud Token Usage
 
 $WkDir = Resolve-Path (Join-Path $PSScriptRoot "..")
 $SharedKnowledge = Join-Path $env:USERPROFILE ".gemini\antigravity\knowledge"
 $LocalKnowledge = Join-Path $PSScriptRoot "system"
+$LogFile = Join-Path $LocalKnowledge "diagnostic.log"
+
+function Write-OClawLog([string]$Event, [string]$Details = "") {
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $Entry = "[$Timestamp] [$Event] $Details"
+    Add-Content -Path $LogFile -Value $Entry -ErrorAction SilentlyContinue
+}
 
 # 1. HARDWARE IDENTITY LOCK & TIERING
 function Get-OClawIdentity([int]$Tier = 1) {
@@ -74,7 +81,7 @@ function Get-OClawContext {
     To execute other actions, use JSON block inside <ACTION> tag.
 "@
 
-    $RawContext = "IDENTITY: OpenClaw (Sovereign).`n`nUSER_LEXICON:`n$UserLexicon`n`nCHAT_HISTORY:`n$History`n`nTACTICAL_CORE:`n$LocalCore`n`nDYNAMIC_SKILLS:`n$DeepSkills`n`nMISSION_PROTOCOLS:`n$MissionVault`n`nPROMPT_DNA:`n$PromptDNA`n`n$SovereignDirective"
+    $RawContext = "IDENTITY: OpenClaw V1.00 (Sovereign).`n`nUSER_LEXICON:`n$UserLexicon`n`nCHAT_HISTORY:`n$History`n`nTACTICAL_CORE:`n$LocalCore`n`nDYNAMIC_SKILLS:`n$DeepSkills`n`nMISSION_PROTOCOLS:`n$MissionVault`n`nPROMPT_DNA:`n$PromptDNA`n`n$SovereignDirective"
     $Sanitized = $RawContext -replace '[^\x20-\x7E\n\r]', '' 
     return $Sanitized
 }
@@ -96,6 +103,8 @@ function Format-OClawCard([string]$RawText) {
 # 4. BRAIN HANDSHAKE (Ollama API - Tiered Protocol)
 function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
 
+    Write-OClawLog "INFERENCE_START" "User: $UserMessage | Tier: $Tier"
+    
     # YT AUTO-LEARNING INTERCEPT (Rule YT-LEARN-01 | P0 Mandate)
     if ($UserMessage -match "(https?://(www\.)?(youtube\.com|youtu\.be)/\S+)") {
         $YtUrl = $Matches[1]
@@ -145,16 +154,18 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
         $jsonStr = $matches[1]
         try {
             $actionObj = $jsonStr | ConvertFrom-Json
-            $actionRes = Invoke-OClawMission $actionObj.MissionKey $actionObj.Params
-            $CleanRes += "`n`n### [*] SYSTEM DISPATCH:`n$actionRes"
+            if ($actionObj.MissionKey) {
+                $actionRes = Invoke-OClawMission $actionObj.MissionKey $actionObj.Params
+                $CleanRes += "`n`n### [$([char]0x1F518)] SYSTEM DISPATCH:`n$actionRes"
+            }
         } catch {
             $CleanRes += "`n`n### [X] SYSTEM DISPATCH ERROR:`nFailed to parse action JSON."
         }
         $CleanRes = $CleanRes -replace '(?s)<ACTION>.*?</ACTION>', ''
     }
     
-    # Persistent Logging (V35.0)
-    $LogEntry = @{ timestamp = (Get-Date -Format "o"); user = $UserMessage; assistant = $CleanRes.Trim() } | ConvertTo-Json -Compress
+    # Persistent Logging (V1.00 Sovereign Baseline)
+    $LogEntry = @{ timestamp = (Get-Date -Format "o"); version = "V1.00"; user = $UserMessage; assistant = $CleanRes.Trim() } | ConvertTo-Json -Compress
     Add-Content -Path (Join-Path $LocalKnowledge "skills_bridge\chat_log.jsonl") -Value $LogEntry
     
     $FormattedResponse = Format-OClawCard $CleanRes.Trim()
@@ -165,6 +176,7 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 1) {
         Invoke-OClawSkill "Sovereign_GitSync" "-Reason '$Reason'"
     }
     
+    Write-OClawLog "INFERENCE_END" "Model: $Model | Latency: Success"
     return "$Badge $FormattedResponse"
 }
 
