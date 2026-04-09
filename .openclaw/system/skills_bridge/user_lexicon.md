@@ -1,4 +1,4 @@
-# OpenClaw Sovereign V1.04: The Singularity Roadmap
+# OpenClaw: Sovereign User Lexicon [V1.05]
 
 > [!IMPORTANT]
 > **Identity**: SEMANTIC_MIRROR
