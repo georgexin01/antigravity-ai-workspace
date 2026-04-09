@@ -1,4 +1,4 @@
-# OpenClaw: Sovereign User Lexicon [V1.06]
+# OpenClaw: Sovereign User Lexicon [V1.07]
 
 > [!IMPORTANT]
 > **Identity**: SEMANTIC_MIRROR

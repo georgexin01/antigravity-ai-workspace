@@ -23,7 +23,7 @@ $SystemRoot = Join-Path $PSScriptRoot "system"
 $AssetPath = Join-Path $SystemRoot "assets\crab_icon.png"
 
 # -----------------------------------------------------
-# 2. DESIGN TOKENS# OPENCLAW SOVEREIGN V1.06
+# 2. DESIGN TOKENS# OPENCLAW SOVEREIGN V1.07
 # -----------------------------------------------------
 # [AESTHETIC]: Liquid Glass (Zeta Red / Deep Zinc)
 $Color_ZetaRed = [System.Drawing.ColorTranslator]::FromHtml("#FF0000")
@@ -297,7 +297,7 @@ function Add-Bubble($title, $content, $type = "AI", $id = $null) {
     if (!$id) { $id = "b-" + [guid]::NewGuid().ToString().Substring(0,8) }
     $class = if ($type -eq "USER") { "bubble bubble-user" } else { "bubble bubble-ai" }
     
-    $html = "<div id='$id' class='$class' onclick='toggleBubble(\`$id\`)'><div class='bubble-title'>$title</div><div class='bubble-content'>$content</div></div>"
+    $html = "<div id='{0}' class='{1}' onclick='toggleBubble(&quot;{0}&quot;)'><div class='bubble-title'>{2}</div><div class='bubble-content'>{3}</div></div>" -f $id, $class, $title, $content
     $safe = $html.Replace("'", "\'").Replace("`r`n", "<br/>").Replace("`n", "<br/>")
     $script = "var div = document.createElement('div'); div.innerHTML = '$safe'; document.getElementById('container').appendChild(div); window.scrollTo(0,document.body.scrollHeight);"
     
@@ -404,7 +404,7 @@ $inputBox.Add_KeyDown({
 $sendBtn.Add_Click($SendAction)
 
 $form.Add_Shown({
-        # OPENCLAW SOVEREIGN V1.06
+        # OPENCLAW SOVEREIGN V1.07
         $chatView.Document.InvokeScript("updateProgress", @(10, "Mounting Memory Layer..."))
         Start-Sleep -Milliseconds 200
         $chatView.Document.InvokeScript("updateProgress", @(25, "Knowledge is reading..."))
@@ -421,7 +421,7 @@ $form.Add_Shown({
         Start-Sleep -Milliseconds 200
         $chatView.Document.InvokeScript("updateProgress", @(100, "READY."))
         
-        Add-Bubble "ZETA SOVEREIGN V1.06 ONLINE" "Brain: Gemma4:e2b (7.2GB) Ready | Atmosphere: ACTIVE | Design DNA: Zeta Core (Red/Black)" "SUCCESS"
+        Add-Bubble "ZETA SOVEREIGN V1.07 ONLINE" "Brain: Gemma4:e2b (7.2GB) Ready | Atmosphere: ACTIVE | Design DNA: Zeta Core (Red/Black)" "SUCCESS"
     })
 
 $form.ShowDialog() | Out-Null
