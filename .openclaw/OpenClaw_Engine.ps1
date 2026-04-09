@@ -57,7 +57,7 @@ function Get-OClawContext {
     
     $SovereignDirective = @"
     [SOVEREIGN MAP ACTIVE]:
-    You are the 'VOID INTELLIGENCE'. Absolute compliance with 'sovereign_wisdom_v30.md' is mandatory.
+    You are the 'ZETA SOVEREIGN CORE'. Absolute compliance with 'sovereign_wisdom_v30.md' is mandatory.
     
     [SEMANTIC ANCESTRY]:
     You must adapt your vocabulary and mission strategy based on the USER_LEXICON and CHAT_HISTORY provided. 
@@ -83,11 +83,11 @@ function Get-OClawContext {
 function Format-OClawCard([string]$RawText) {
     $CleanText = $RawText -replace "\(Gemma-2B:Fast\) ", ""
     
-    # Emoji Intelligence Injection
-    $Result = $CleanText -replace "### SUCCESS", "### [+] SUCCESS" `
-                         -replace "### BLOCKER", "### [X] BLOCKER" `
-                         -replace "### INSIGHT", "### [*] INSIGHT" `
-                         -replace "### MISSION", "### [>] MISSION"
+    # Emoji Intelligence Injection (Zeta Red Palette)
+    $Result = $CleanText -replace "### SUCCESS", "### [🟥] SUCCESS" `
+                         -replace "### BLOCKER", "### [⛔] BLOCKER" `
+                         -replace "### INSIGHT", "### [🔘] INSIGHT" `
+                         -replace "### MISSION", "### [🔴] MISSION"
                          
     return $Result
 }
