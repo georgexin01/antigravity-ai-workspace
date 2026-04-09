@@ -1,6 +1,6 @@
-# OPENCLAW ENGINE V1.01 [SOVEREIGN_CORE]
+# OPENCLAW ENGINE V1.02 [SOVEREIGN_CORE]
 # -----------------------------------
-# [IDENTITY]: OPENCLAW_ENGINE_V1.01
+# [IDENTITY]: OPENCLAW_ENGINE_V1.02
 # [MANDATE]: Persistent GPU Execution / Zero Cloud Token Usage
 
 $WkDir = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -71,7 +71,7 @@ function Get-OClawContext {
     Learn jargon, shortcuts, and preferred logical flows.
     
     [COGNITIVE SOLVING FLOW]:
-    1. <THOUGHTS>: Audit request + Check User Lexicon + Local Rules.
+    1. <THOUGHTS>: Audit context + Local Rules.
     2. <PLAN>: Outline tactical missions.
     3. <RESPONSE>: Final high-fidelity response [CARD].
     
@@ -81,7 +81,7 @@ function Get-OClawContext {
     To execute other actions, use JSON block inside <ACTION> tag.
 "@
 
-    $RawContext = "IDENTITY: OpenClaw V1.00 (Sovereign).`n`nUSER_LEXICON:`n$UserLexicon`n`nCHAT_HISTORY:`n$History`n`nTACTICAL_CORE:`n$LocalCore`n`nDYNAMIC_SKILLS:`n$DeepSkills`n`nMISSION_PROTOCOLS:`n$MissionVault`n`nPROMPT_DNA:`n$PromptDNA`n`n$SovereignDirective"
+    $RawContext = "IDENTITY: OpenClaw V1.02 (Sovereign).`n`nUSER_LEXICON:`n$UserLexicon`n`nCHAT_HISTORY:`n$History`n`nTACTICAL_CORE:`n$LocalCore`n`nDYNAMIC_SKILLS:`n$DeepSkills`n`nMISSION_PROTOCOLS:`n$MissionVault`n`nPROMPT_DNA:`n$PromptDNA`n`n$SovereignDirective"
     $Sanitized = $RawContext -replace '[^\x20-\x7E\n\r]', '' 
     return $Sanitized
 }

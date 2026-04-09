@@ -402,7 +402,7 @@ $inputBox.Add_KeyDown({
 $sendBtn.Add_Click($SendAction)
 
 $form.Add_Shown({
-        # SOVEREIGN BOOT SEQUENCE (V45.0)
+        # OPENCLAW SOVEREIGN V1.02
         $chatView.Document.InvokeScript("updateProgress", @(10, "Mounting Memory Layer..."))
         Start-Sleep -Milliseconds 100
         $chatView.Document.InvokeScript("updateProgress", @(30, "Syncing GPU Identity..."))
