@@ -36,7 +36,7 @@ $Color_Glass = [System.Drawing.Color]::FromArgb(160, 10, 15, 26)
 # -----------------------------------------------------
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "OpenClaw Hardened V33.0"
-$form.Size = New-Object System.Drawing.Size(980, 700)
+$form.Size = New-Object System.Drawing.Size(1250, 950)
 $form.BackColor = $Color_DarkNavy
 $form.FormBorderStyle = "None"
 $form.StartPosition = "CenterScreen"
