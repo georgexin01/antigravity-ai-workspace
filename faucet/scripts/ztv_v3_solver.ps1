@@ -1,41 +1,49 @@
-# ZTV V30.0 SOVEREIGN SOLVER ELITE (PowerShell Native)
+# ZTV V35.1 SOVEREIGN SOLVER ELITE (PowerShell Native)
 # --------------------------------------------------
-# [IDENTITY]: SOVEREIGN_V30.0_ELITE
-# [MANDATE]: Persistent GPU Performance Lock (Zero Python Dependency)
+# [IDENTITY]: SOVEREIGN_V35.1_ELITE
+# [MANDATE]: Self-Correcting / Wisdom-Injected / Zero Cloud
 
 param (
     [string]$TargetAction = "CAPTCHA_SOLVE",
     [string]$SnipPath = "c:\Users\User\OneDrive\Desktop\workspace\snipaste\active_mission.png",
-    [string]$ArchiveDir = "C:\Users\User\OneDrive\Desktop\workspace\archive\failed_missions"
+    [string]$ArchiveDir = "C:\Users\User\OneDrive\Desktop\workspace\archive\failed_missions",
+    [string]$WisdomPath = "c:\Users\User\OneDrive\Desktop\workspace\.openclaw\system\knowledge\faucet_wisdom_vault.md"
 )
 
-# 1. HARDWARE IDENTITY LOCK (Instant Boot)
+# 1. HARDWARE IDENTITY LOCK (High-Fidelity Sync)
 $HardwareID = (Get-CimInstance Win32_BaseBoard).SerialNumber
-$VerifiedID = "07C9611_P51E971105" # PC: XIN (Updated)
+$VerifiedID = "07C9611_P51E971105" 
 
 if ($HardwareID -eq $VerifiedID) {
     Write-Host "[SOVEREIGN] Identity Verified: XIN. Locking GPU Performance Model..." -ForegroundColor Green
     $Model = "my-gpu-gemma"
 } else {
-    Write-Host "[SOVEREIGN] WARNING: Unknown Hardware Detection. Falling back to Safety Mode." -ForegroundColor Yellow
+    Write-Host "[SOVEREIGN] WARNING: Standard performance detected. Engaging Gemma 4 High-Fidelity Sink." -ForegroundColor Yellow
     $Model = "gemma4:e2b"
 }
 
-# 2. TRIGGER SILENT PULSE
-Write-Host "[1/3] Triggering ALV Pulse..." -ForegroundColor Cyan
+# 2. WISDOM INJECTION (SM-DNA Sync)
+$WisdomContext = if (Test-Path $WisdomPath) { Get-Content $WisdomPath -Raw } else { "" }
+
+# 3. TRIGGER SILENT PULSE
+Write-Host "[1/4] Triggering ALV Pulse..." -ForegroundColor Cyan
 & powershell -ExecutionPolicy Bypass -File "c:\Users\User\OneDrive\Desktop\workspace\snipaste\auto_pulse.ps1"
-Start-Sleep -Seconds 2 # Wait for snip to save
+Start-Sleep -Seconds 2 
 
 if (-not (Test-Path $SnipPath)) {
     Write-Host "[ERROR] Snip failed. active_mission.png not found." -ForegroundColor Red
     exit 1
 }
 
-# 3. LOCAL BRAIN HANDSHAKE (Ollama)
-$Badge = "(Gemma4)"
-Write-Host "[2/3] Delegating Logic to $Badge $Model..." -ForegroundColor Yellow
+# 4. LOCAL BRAIN HANDSHAKE (Injected Context)
+$Badge = "(Gemma4:Elite)"
+Write-Host "[2/4] Delegating Logic to $Badge $Model..." -ForegroundColor Yellow
 
 $Prompt = @"
+[WISDOM_VAULT_ACTIVE]:
+$WisdomContext
+
+[MISSION]: 
 Analyze faucet_state from image. 
 1. FIND the unique icon (odd rotation or different shape).
 2. FIND the 'Verify' or 'Claim' button.
@@ -51,18 +59,22 @@ try {
     exit 1
 }
 
-# 4. OUTPUT SYNC & ARCHIVE
-Write-Host "[3/3] $Badge Logic Synced. Tactical Coordinates Received." -ForegroundColor Green
+# 5. OUTPUT SYNC & AUTO-POST-MORTEM
+Write-Host "[3/4] $Badge Logic Synced. Tactical Coordinates Received." -ForegroundColor Green
 $Result | Out-File "c:\Users\User\OneDrive\Desktop\workspace\faucet\solver_output.txt" -Encoding utf8
 
-# Automated Failure Archiving (Rule SM-05)
-if ($Result -match "FAILED" -or $Result -match "ERROR") {
+$IsFailure = ($Result -match "FAILED" -or $Result -match "ERROR" -or ($Result -match "NULL"))
+
+if ($IsFailure) {
     $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $FailPath = Join-Path $ArchiveDir "fail_$Timestamp"
     New-Item -ItemType Directory -Path $FailPath -Force | Out-Null
     Copy-Item $SnipPath (Join-Path $FailPath "failed_capture.png")
     $Result | Out-File (Join-Path $FailPath "action_log.json")
-    Write-Host "[SOVEREIGN] Mission state archived for Phoenix Post-Mortem." -ForegroundColor Cyan
+    
+    Write-Host "[4/4] [!] MISSION FAILURE DETECTED. Triggering Phoenix Autonomous Post-Mortem..." -ForegroundColor Coral
+    $PhoenixPath = "c:\Users\User\OneDrive\Desktop\workspace\faucet\scripts\phoenix_recursive_tester.ps1"
+    & powershell -ExecutionPolicy Bypass -File $PhoenixPath
+} else {
+    Write-Host "[4/4] MISSION READY. Awaiting Gemini-3 Bridge Execution." -ForegroundColor Cyan
 }
-
-Write-Host "MISSION READY. Awaiting Gemini-3 Bridge Execution." -ForegroundColor Cyan

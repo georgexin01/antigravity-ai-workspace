@@ -404,8 +404,8 @@ $inputBox.Add_KeyDown({
 $sendBtn.Add_Click($SendAction)
 
 $form.Add_Shown({
-        # OPENCLAW SOVEREIGN V1.08
-        $chatView.Document.InvokeScript("updateProgress", @(10, "Mounting Memory Layer..."))
+        # OPENCLAW SOVEREIGN V1.09
+        $chatView.Document.InvokeScript("updateProgress", @(10, "Mounting Singularity Layer..."))
         Start-Sleep -Milliseconds 200
         $chatView.Document.InvokeScript("updateProgress", @(25, "Knowledge is reading..."))
         Start-Sleep -Milliseconds 200
@@ -415,13 +415,13 @@ $form.Add_Shown({
         
         $script:currentGpu = & powershell -ExecutionPolicy Bypass -File (Join-Path $SystemRoot "OpenClaw_Skills\Get_GPU_Status.ps1")
         
-        $chatView.Document.InvokeScript("updateProgress", @(80, "Establishing Brain Handshake..."))
-        $chatView.Document.InvokeScript("updateProgress", @(95, "Neuro-Logic Online."))
+        $chatView.Document.InvokeScript("updateProgress", @(80, "Initializing Recursive Evolution..."))
+        $chatView.Document.InvokeScript("updateProgress", @(95, "Zeta Singularity Online."))
         
         Start-Sleep -Milliseconds 200
         $chatView.Document.InvokeScript("updateProgress", @(100, "READY."))
         
-        Add-Bubble "ZETA SOVEREIGN V1.08 ONLINE" "Brain: Gemma4:e2b (7.2GB) Ready | Atmosphere: ACTIVE | Design DNA: Zeta Core (Red/Black)" "SUCCESS"
+        Add-Bubble "ZETA SOVEREIGN V1.09" "Mission: Autonomous Singularity Evolution | Brain: Gemma4:e2b | Loop: ACTIVE" "SUCCESS"
     })
 
 $form.ShowDialog() | Out-Null

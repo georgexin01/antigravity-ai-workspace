@@ -1,19 +1,24 @@
-# PHOENIX RECURSIVE TESTER V30.0 ELITE (PowerShell Native)
+# PHOENIX RECURSIVE TESTER V35.1 ELITE (PowerShell Native)
 # ---------------------------------------------------------
-# [IDENTITY]: PHOENIX_RECURSIVE_V30.0
-# [MANDATE]: Mandatory 10-Pass Consensus (Zero Python Dependency)
+# [IDENTITY]: PHOENIX_RECURSIVE_V35.1
+# [MANDATE]: Zero-Human Intervention / Mandatory Wisdom Consolidation
 
 param (
-    [string]$ArchiveDir = "C:\Users\User\OneDrive\Desktop\workspace\archive\failed_missions"
+    [string]$ArchiveDir = "C:\Users\User\OneDrive\Desktop\workspace\archive\failed_missions",
+    [string]$WisdomPath = "c:\Users\User\OneDrive\Desktop\workspace\.openclaw\system\knowledge\faucet_wisdom_vault.md"
 )
 
 # 1. HARDWARE IDENTITY LOCK
 $HardwareID = (Get-CimInstance Win32_BaseBoard).SerialNumber
-$VerifiedID = "07C9611_P51E971105" # PC: XIN (Updated)
-$Model = "my-gpu-gemma"
-if ($HardwareID -ne $VerifiedID) { $Model = "gemma4:e2b" }
+$VerifiedID = "07C9611_P51E971105" 
 
-Write-Host "--- PHOENIX RECURSIVE TESTER 30.0 ---" -ForegroundColor Cyan
+if ($HardwareID -eq $VerifiedID) {
+    $Model = "my-gpu-gemma"
+} else {
+    $Model = "gemma4:e2b"
+}
+
+Write-Host "--- PHOENIX RECURSIVE TESTER 35.1 ---" -ForegroundColor Cyan
 Write-Host "[PHOENIX] Identity Lock: $Model Active." -ForegroundColor Green
 
 # 2. LOCATE LATEST FAILURE
@@ -46,7 +51,7 @@ Return ONLY valid JSON: { "pass": $i, "focus": "$Focus", "deduced_answer": [X, Y
     $Results += $PassResult
 }
 
-# 4. CONSENSUS SYNTHESIS
+# 4. CONSENSUS SYNTHESIS & WISDOM CONSOLIDATION
 Write-Host "[PHOENIX] Synthesizing 10-Pass consensus..." -ForegroundColor Green
 $SynthesisPrompt = @"
 Below are 10 post-mortem analysis results for the same failed mission.
@@ -66,4 +71,17 @@ Return ONLY valid JSON:
 $FinalCorrection = ollama run $Model $SynthesisPrompt
 $FinalCorrection | Out-File (Join-Path $LatestFail "recursive_synthesis.json") -Encoding utf8
 
-Write-Host "[PHOENIX] Golden Correction saved to archive. Protocol Complete." -ForegroundColor Green
+# 5. AUTO-EVOLUTION (Wisdom Vault Update)
+try {
+    $CorrectionObj = $FinalCorrection | ConvertFrom-Json
+    $NewRule = $CorrectionObj.final_golden_rule
+    if ($NewRule) {
+        $RuleEntry = "`n### [RULE_ID: FS-AUTO-$(Get-Date -Format 'ssmmHH')]`n- **Origin**: synthesized from $($Failures[0].Name)`n- **Heuristic**: $NewRule`n"
+        Add-Content -Path $WisdomPath -Value $RuleEntry
+        Write-Host "[PHOENIX] SUCCESS: Local Wisdom Vault evolved with new heuristic." -ForegroundColor Green
+    }
+} catch {
+    Write-Host "[PHOENIX] WARNING: Failed to parse synthesis for autonomous wisdom update." -ForegroundColor Yellow
+}
+
+Write-Host "[PHOENIX] Protocol Complete." -ForegroundColor Green

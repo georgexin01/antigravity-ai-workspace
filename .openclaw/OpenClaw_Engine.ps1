@@ -1,5 +1,6 @@
-# OPENCLAW ENGINE V1.08 [SOVEREIGN_CORE]
-# -----------------------------------
+# ==============================================================================
+# OPENCLAW SOVEREIGN ENGINE - [VERSION V1.09] - [SINGULARITY_BASELINE]
+# ==============================================================================
 # [IDENTITY]: OPENCLAW_ENGINE_V1.08
 # [MANDATE]: Persistent GPU Execution / Zero Cloud Token Usage
 
@@ -210,9 +211,19 @@ function Invoke-OClawFileRead([string]$Path) {
 function Invoke-OClawFileWrite([string]$Path, [string]$Content) {
     Set-Content -Path $Path -Value $Content -Force -ErrorAction SilentlyContinue -ErrorVariable err
     if ($err) {
-        return "### BLOCKER: [FILE_WRITE] Failed to update '$Path'. Error: $($err[0].Exception.Message)"
+        return "### [X] BLOCKER: [FILE_WRITE] Failed to update '$Path'. Error: $($err[0].Exception.Message)"
     }
-    return "### SUCCESS: [FILE_WRITE] '$Path' updated with new logic."
+    return "### [+] SUCCESS: [FILE_WRITE] '$Path' updated with new logic."
+}
+
+function Invoke-OClawDirList([string]$Path) {
+    if (-not (Test-Path $Path)) { return "### [X] BLOCKER: [DIR_LIST] Path not found." }
+    $Items = Get-ChildItem -Path $Path | Select-Object Name, Length, LastWriteTime
+    $Res = "### [📂] DIRECTORY_CONTENT: $Path`n"
+    foreach ($i in $Items) {
+        $Res += "- $($i.Name) ($($i.Length) bytes) - $($i.LastWriteTime)`n"
+    }
+    return $Res
 }
 
 function Invoke-OClawModelInfo {
