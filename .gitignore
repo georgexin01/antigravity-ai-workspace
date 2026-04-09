@@ -1,0 +1,20 @@
+# OPENCLAW SOVEREIGN GITIGNORE
+# ---------------------------
+
+# Secure Local Telemetry (Hardware IDs / Success Rates)
+.openclaw/core_rules/local_success_matrix.md
+.openclaw/core_rules/system_identity.md
+
+# Log Files
+*.log
+*.tmp
+.openclaw/*.log
+
+# Environment / Local Cache
+.openclaw/.cache/
+node_modules/
+
+# OS Specific
+Thumbs.db
+Desktop.ini
+.DS_Store
