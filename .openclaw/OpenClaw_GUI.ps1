@@ -25,18 +25,18 @@ $AssetPath = Join-Path $SystemRoot "assets\crab_icon.png"
 # 2. DESIGN TOKENS
 # -----------------------------------------------------
 $Color_DarkNavy = [System.Drawing.ColorTranslator]::FromHtml("#050810")
-$Color_Cyan     = [System.Drawing.ColorTranslator]::FromHtml("#00E5CC")
-$Color_Coral    = [System.Drawing.ColorTranslator]::FromHtml("#FF4D4C")
+$Color_Cyan = [System.Drawing.ColorTranslator]::FromHtml("#00E5CC")
+$Color_Coral = [System.Drawing.ColorTranslator]::FromHtml("#FF4D4C")
 $Color_Lavender = [System.Drawing.ColorTranslator]::FromHtml("#9E9EFF")
-$Color_Surface  = [System.Drawing.ColorTranslator]::FromHtml("#0A0F1A")
-$Color_Glass    = [System.Drawing.Color]::FromArgb(160, 10, 15, 26)
+$Color_Surface = [System.Drawing.ColorTranslator]::FromHtml("#0A0F1A")
+$Color_Glass = [System.Drawing.Color]::FromArgb(160, 10, 15, 26)
 
 # -----------------------------------------------------
 # 3. GHOST SHELL ASSEMBLY
 # -----------------------------------------------------
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "OpenClaw Hardened V33.0"
-$form.Size = New-Object System.Drawing.Size(1250, 950)
+$form.Size = New-Object System.Drawing.Size(980, 700)
 $form.BackColor = $Color_DarkNavy
 $form.FormBorderStyle = "None"
 $form.StartPosition = "CenterScreen"
@@ -60,16 +60,16 @@ function Update-FormRegion {
 $currentPath = Update-FormRegion
 
 $form.Add_Resize({
-    $script:currentPath = Update-FormRegion
-    $form.Invalidate()
-})
+        $script:currentPath = Update-FormRegion
+        $form.Invalidate()
+    })
 
 $form.Add_Paint({
-    $g = $_.Graphics
-    $g.SmoothingMode = "AntiAlias"
-    $g.FillPath((New-Object System.Drawing.SolidBrush($Color_Glass)), $script:currentPath)
-    $g.DrawPath((New-Object System.Drawing.Pen($Color_Cyan, 2)), $script:currentPath)
-})
+        $g = $_.Graphics
+        $g.SmoothingMode = "AntiAlias"
+        $g.FillPath((New-Object System.Drawing.SolidBrush($Color_Glass)), $script:currentPath)
+        $g.DrawPath((New-Object System.Drawing.Pen($Color_Cyan, 2)), $script:currentPath)
+    })
 
 $sizeGrip = New-Object System.Windows.Forms.Label
 $sizeGrip.Location = New-Object System.Drawing.Point($form.Width - 40, $form.Height - 40)
@@ -194,7 +194,7 @@ $form.Controls.Add($sendBtn)
 # -----------------------------------------------------
 # 8. SOVEREIGN LOGIC
 # -----------------------------------------------------
-function Add-Bubble($title, $content, $type="AI") {
+function Add-Bubble($title, $content, $type = "AI") {
     $class = if ($type -eq "USER") { "bubble bubble-user" } else { "bubble bubble-ai" }
     $html = "<div class='$class'><div class='bubble-title'>$title</div><div class='bubble-content'>$content</div></div>"
     $safe = $html.Replace("'", "\'").Replace("`r`n", "<br/>").Replace("`n", "<br/>")
@@ -203,18 +203,18 @@ function Add-Bubble($title, $content, $type="AI") {
 }
 
 $btnDelete.Add_Click({ 
-    $chatView.Document.GetElementById("container").InnerHtml = "" 
-    [System.Media.SystemSounds]::Beep.Play()
-})
+        $chatView.Document.GetElementById("container").InnerHtml = "" 
+        [System.Media.SystemSounds]::Beep.Play()
+    })
 
 $btnSync.Add_Click({
-    Add-Bubble "SYSTEM SYNC" "Rescanning master vault... Knowledge Singularity updated." "SYSTEM"
-})
+        Add-Bubble "SYSTEM SYNC" "Rescanning master vault... Knowledge Singularity updated." "SYSTEM"
+    })
 
 $btnMission.Add_Click({
-    Add-Bubble "MISSION TRIGGER" "Tactical Wave initiated." "MISSION"
-    Start-Process "powershell" "-ExecutionPolicy Bypass -Command { . '$EnginePath'; Invoke-OClawMission 'RESOLVE_FAUCET' }"
-})
+        Add-Bubble "MISSION TRIGGER" "Tactical Wave initiated." "MISSION"
+        Start-Process "powershell" "-ExecutionPolicy Bypass -Command { . '$EnginePath'; Invoke-OClawMission 'RESOLVE_FAUCET' }"
+    })
 
 $SendAction = {
     $msg = $inputBox.Text
@@ -232,16 +232,16 @@ $SendAction = {
 }
 
 $inputBox.Add_KeyDown({
-    if ($_.KeyCode -eq "Enter") {
-        & $SendAction
-        $_.SuppressKeyPress = $true
-    }
-})
+        if ($_.KeyCode -eq "Enter") {
+            & $SendAction
+            $_.SuppressKeyPress = $true
+        }
+    })
 
 $sendBtn.Add_Click($SendAction)
 
 $form.Add_Shown({
-    Add-Bubble "SEMANTIC MIRROR V35.1 ONLINE" "Semantic Memory: ACTIVE | YT Auto-Learn: ARMED | Paste any YouTube link to evolve." "SUCCESS"
-})
+        Add-Bubble "SEMANTIC MIRROR V35.1 ONLINE" "Semantic Memory: ACTIVE | YT Auto-Learn: ARMED | Paste any YouTube link to evolve." "SUCCESS"
+    })
 
 $form.ShowDialog() | Out-Null
