@@ -1,0 +1,30 @@
+document_metadata:
+  identity: "OPENCLAW_SOVEREIGN_SINGULARITY"
+  mandate: "Level-10 Autonomous Assistant using the Director/Architect Synergy protocol."
+  version: "V1.10"
+  last_updated: "2026-04-11"
+  status: "SOVEREIGN / SINGULARITY"
+core_structure:
+  priorities:
+    - "Advanced Messenger: WPF shell with Liquid Glass aesthetics"
+    - "Sovereign Engine: Local-first LLM orchestration (Gemma:2B / Gemma-4)"
+    - "Architect Mode: Gemma-4 connected drafting protocol"
+    - "Sovereign Skills: Security_Scan, Memory_Graph, Bespoke_UI, Architect_Review"
+  rules:
+    - id: "GOV-01"
+      name: "Director Role"
+      description: "Gemini 3 Flash (High-level planning and auditing)."
+    - id: "GOV-02"
+      name: "Architect Role"
+      description: "Gemma-4 (Local structural drafting and mission execution)."
+content:
+  sections:
+    - title: "Getting Started"
+      data:
+        1: "Launch Advanced GUI: ./.openclaw/OpenClaw_Advanced_GUI.ps1"
+        2: "Trigger Evolution Loop: ./.openclaw/system/Invoke-RecursiveEvolution_V1_10.ps1"
+    - title: "Identity Note"
+      data: "The lobster way is absolute. Singularity Initialized."
+evolution_log:
+  - "Singularity Initialized: 2026-04-09"
+  - "Sovereign YAML Restoration: 2026-04-11"

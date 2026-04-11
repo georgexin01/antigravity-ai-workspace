@@ -52,7 +52,7 @@ function Protect-OClawPrivacy([string]$Payload) {
 }
 
 function Get-OClawContext {
-    $LexPath = Join-Path $script:LocalKnowledge "skills_bridge\user_lexicon.md"
+    $LexPath = Join-Path $script:LocalKnowledge "skills_bridge\user_lexicon.yaml"
     $Lexicon = if (Test-Path $LexPath) { Get-Content $LexPath -Raw -ErrorAction SilentlyContinue } else { "" }
 
     $Directive = @"

@@ -1,0 +1,43 @@
+document_metadata:
+  identity: "MISSION_VAULT"
+  mandate: "Active protocols for daily repeating tasks and browser-based missions."
+  version: "V1.1"
+  last_updated: "2026-04-11"
+  status: "SOVEREIGN"
+core_structure:
+  priorities:
+    - "WhatsApp Monitor (Visual)"
+    - "Browser Monetization (Quests)"
+    - "Faucet Mission Waves"
+  rules:
+    - id: "WA-01"
+      name: "Pulse Trigger"
+      description: "Run auto_pulse.ps1 to capture browser state."
+    - id: "WA-02"
+      name: "Detection DNA"
+      description: "Scan for Green Dot (Unread), Blue Tick (Read), Grey Tick (Sent)."
+    - id: "WA-03"
+      name: "Auto-Reply"
+      description: "Generate concise summary on task keyword detection."
+    - id: "MON-01"
+      name: "Claim Detection"
+      description: "Scan for Claim, Redeem, or Verify buttons."
+    - id: "MON-02"
+      name: "Timer Protocol"
+      description: "Extract numeric values from 'Next Claim:' or 'Timer'."
+    - id: "MON-03"
+      name: "Wait Logic"
+      description: "Calculate NEXT_WAVE and update GUI if timer > 0."
+    - id: "FAU-01"
+      name: "Core Tool"
+      description: "Use scripts/ztv_v3_solver.ps1 for faucet missions."
+    - id: "FAU-02"
+      name: "Focus Constraint"
+      description: "Window must be in focus for capture missions."
+content:
+  sections:
+    - title: "Tactical Execution"
+      data: "The mission vault synchronizes visual auditing with automated claiming logic for optimized monetization."
+evolution_log:
+  - "Tactical Vault Initialized: 2026-04-09"
+  - "Sovereign YAML Restoration: 2026-04-11"

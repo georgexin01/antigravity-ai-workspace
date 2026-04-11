@@ -1,0 +1,41 @@
+document_metadata:
+  identity: "SOVEREIGN_MODULE_REGISTRY"
+  version: "1.0"
+  last_updated: "$(Get-Date -Format 'o')"
+  status: "ACTIVE"
+
+workspace_map:
+  core_engine:
+    path: ".openclaw/"
+    components:
+      - identity: "OpenClaw_Engine.ps1"
+        type: "Command Center"
+      - identity: "OpenClaw_GUI.ps1"
+        type: "Interface"
+  knowledge_vault:
+    path: ".openclaw/knowledge/"
+    modules:
+      - identity: "yt_QapmyoipB5Q_20260409"
+        tags: ["youtube", "learning"]
+      - identity: "yt_T0CKsU0hQx4_20260409"
+        tags: ["youtube", "learning"]
+  system_core:
+    path: ".openclaw/system/"
+    rules:
+      - identity: "user_lexicon"
+        type: "Master Lexicon"
+      - identity: "sovereign_wisdom_v30"
+        type: "Core Mandates"
+      - identity: "system_identity"
+        type: "Agent Identity"
+  skills_bridge:
+    path: ".openclaw/system/skills_bridge/"
+    modules:
+      - identity: "mission_vault"
+        type: "Tactical Repository"
+      - identity: "prompt_dna_v2"
+        type: "Instructional Matrix"
+
+evolution_log:
+  - "Registry Initialized: $(Get-Date -Format 'o')"
+  - "Upgrade: Inspired by Claude Mythos V6.0 Architecture"

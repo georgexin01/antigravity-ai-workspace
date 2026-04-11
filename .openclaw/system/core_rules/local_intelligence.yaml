@@ -1,0 +1,47 @@
+document_metadata:
+  identity: "OPENCLAW_LOCAL_V1.0"
+  mandate: "PC-Specific configurations, mission logs, and sensitive workspace data. LOCAL ONLY. DO NOT GIT SYNC."
+  version: "V1.0"
+  last_updated: "2026-04-11"
+  status: "SOVEREIGN"
+core_structure:
+  priorities:
+    - "Machine Fingerprint"
+    - "Official Intel"
+    - "Local Overrides"
+    - "OpenClaw Pro Setup"
+    - "Local Success Matrix"
+  rules:
+    - id: "MF-01"
+      name: "PC Identity"
+      description: "XIN"
+    - id: "MF-02"
+      name: "Primary GPU"
+      description: "NVIDIA GeForce RTX 2070 (8GB)"
+    - id: "OVR-01"
+      name: "Model Lock"
+      description: "Use my-gpu-gemma (7.2GB) only."
+    - id: "OVR-02"
+      name: "Mission Cache"
+      description: "Path: c:\\Users\\User\\OneDrive\\Desktop\\workspace\\archive\\failed_missions\\"
+    - id: "SETUP-01"
+      name: "CLI Install"
+      description: "cmd /c npm install -g openclaw"
+    - id: "SETUP-02"
+      name: "Onboarding"
+      description: "openclaw setup"
+    - id: "SETUP-03"
+      name: "Gateway"
+      description: "openclaw start"
+content:
+  sections:
+    - title: "Official Resources"
+      data:
+        repo: "https://github.com/openclaw/openclaw"
+        docs: "https://docs.openclaw.ai/"
+        hub: "https://clawhub.ai"
+    - title: "Intelligence Integration"
+      data: "The local PowerShell UI is synced with the local Gemma-4 Brain and operates in parallel to the Global Gateway."
+evolution_log:
+  - "Local Vault Initialized: 2026-04-09"
+  - "Sovereign YAML Restoration: 2026-04-11"

@@ -24,38 +24,41 @@ switch ($Action.ToUpper()) {
     "CREATE" {
         if (-not $Title) { Write-Output "[NOTES] Provide -Title."; break }
         $id = if ($NoteId) { $NoteId } else { Get-NoteId $Title }
-        $path = Join-Path $NotesDir "$id.md"
+        $path = Join-Path $NotesDir "$id.yaml"
 
         $note = @"
----
-title: $Title
-created: $(Get-Date -Format "o")
-modified: $(Get-Date -Format "o")
-tags: [$Tag]
----
-
-$Content
+document_metadata:
+  identity: "NOTE_$id"
+  title: "$Title"
+  created: "$(Get-Date -Format 'o')"
+  modified: "$(Get-Date -Format 'o')"
+  tags: ["$Tag"]
+  status: "SOVEREIGN"
+content:
+  text: |
+    $($Content -replace '"', '\"')
+evolution_log:
+  - "Note Created: $(Get-Date -Format 'o')"
 "@
         Set-Content -Path $path -Value $note -Encoding UTF8
-        Write-Output "[NOTES] Created: $Title ($id.md)"
+        Write-Output "[NOTES] Created: $Title ($id.yaml)"
     }
 
     "LIST" {
-        $files = Get-ChildItem $NotesDir -Filter "*.md" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+        $files = Get-ChildItem $NotesDir -Filter "*.yaml" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
         if ($files.Count -eq 0) { Write-Output "[NOTES] No notes found. Use -Action CREATE to start."; break }
 
         $output = "[NOTES] $($files.Count) notes:`n"
         foreach ($f in $files) {
-            $firstLine = (Get-Content $f.FullName | Where-Object { $_ -match "^title:" } | Select-Object -First 1) -replace "title:\s*", ""
-            $tags = (Get-Content $f.FullName | Where-Object { $_ -match "^tags:" } | Select-Object -First 1) -replace "tags:\s*", ""
-            $output += "  [$($f.BaseName)] $firstLine $tags ($($f.LastWriteTime.ToString('MM-dd HH:mm')))`n"
+            $firstLine = (Get-Content $f.FullName | Where-Object { $_ -match "title:" } | Select-Object -First 1) -replace 'title:\s*"*', '' -replace '"*', ''
+            $output += "  [$($f.BaseName)] $firstLine ($($f.LastWriteTime.ToString('MM-dd HH:mm')))`n"
         }
         Write-Output $output
     }
 
     "READ" {
         $id = if ($NoteId) { $NoteId } else { Get-NoteId $Title }
-        $path = Join-Path $NotesDir "$id.md"
+        $path = Join-Path $NotesDir "$id.yaml"
         if (-not (Test-Path $path)) { Write-Output "[NOTES] Note '$id' not found."; break }
         $content = Get-Content $path -Raw
         Write-Output "[NOTE: $id]`n$content"
@@ -63,13 +66,13 @@ $Content
 
     "UPDATE" {
         $id = if ($NoteId) { $NoteId } else { Get-NoteId $Title }
-        $path = Join-Path $NotesDir "$id.md"
+        $path = Join-Path $NotesDir "$id.yaml"
         if (-not (Test-Path $path)) { Write-Output "[NOTES] Note '$id' not found."; break }
         if (-not $Content) { Write-Output "[NOTES] Provide -Content to append."; break }
 
         # Update modified date
         $existing = Get-Content $path -Raw
-        $existing = $existing -replace "modified: .+", "modified: $(Get-Date -Format 'o')"
+        $existing = $existing -replace 'modified: ".+"', "modified: `"`$(Get-Date -Format 'o')`""
         $updated = "$existing`n`n$Content"
         Set-Content -Path $path -Value $updated -Encoding UTF8
         Write-Output "[NOTES] Updated: $id"
@@ -77,14 +80,14 @@ $Content
 
     "DELETE" {
         $id = if ($NoteId) { $NoteId } else { Get-NoteId $Title }
-        $path = Join-Path $NotesDir "$id.md"
+        $path = Join-Path $NotesDir "$id.yaml"
         if (Test-Path $path) { Remove-Item $path -Force; Write-Output "[NOTES] Deleted: $id" }
         else { Write-Output "[NOTES] Not found: $id" }
     }
 
     "ENHANCE" {
         $id = if ($NoteId) { $NoteId } else { Get-NoteId $Title }
-        $path = Join-Path $NotesDir "$id.md"
+        $path = Join-Path $NotesDir "$id.yaml"
         if (-not (Test-Path $path)) { Write-Output "[NOTES] Note '$id' not found."; break }
 
         $content = Get-Content $path -Raw
@@ -94,14 +97,14 @@ $Content
         $prompt = "Improve and enhance this note. Fix grammar, improve clarity, add structure with headers. Keep the same information but make it more professional:`n`n$($content.Substring(0, [Math]::Min(2000, $content.Length)))"
         $enhanced = Invoke-OClawQuery $prompt 1
 
-        $enhancedPath = Join-Path $NotesDir "${id}_enhanced.md"
-        Set-Content -Path $enhancedPath -Value "---`ntitle: $Title (Enhanced)`nenhanced: $(Get-Date -Format 'o')`n---`n`n$enhanced" -Encoding UTF8
-        Write-Output "[NOTES] Enhanced version saved: ${id}_enhanced.md`n$enhanced"
+        $enhancedPath = Join-Path $NotesDir "${id}_enhanced.yaml"
+        Set-Content -Path $enhancedPath -Value "document_metadata:`n  identity: `"NOTE_${id}_ENHANCED`"`n  title: `"$Title (Enhanced)`"`n  enhanced: `"$(Get-Date -Format 'o')`"`ncontent:`n  text: |`n    $enhanced" -Encoding UTF8
+        Write-Output "[NOTES] Enhanced version saved: ${id}_enhanced.yaml`n$enhanced"
     }
 
     "SEARCH" {
         if (-not $Query) { Write-Output "[NOTES] Provide -Query."; break }
-        $files = Get-ChildItem $NotesDir -Filter "*.md" -ErrorAction SilentlyContinue
+        $files = Get-ChildItem $NotesDir -Filter "*.yaml" -ErrorAction SilentlyContinue
         $results = @()
         foreach ($f in $files) {
             $content = Get-Content $f.FullName -Raw

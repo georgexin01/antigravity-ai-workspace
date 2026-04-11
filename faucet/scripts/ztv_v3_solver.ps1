@@ -1,29 +1,30 @@
-# ZTV V35.1 SOVEREIGN SOLVER ELITE (PowerShell Native)
+# ZTV V36.0 SOVEREIGN SOLVER HERMES (PowerShell Native)
 # --------------------------------------------------
-# [IDENTITY]: SOVEREIGN_V35.1_ELITE
-# [MANDATE]: Self-Correcting / Wisdom-Injected / Zero Cloud
+# [IDENTITY]: SOVEREIGN_V36.0_HERMES
+# [MANDATE]: Strictly Fenced / Smart Balanced / Zero Cloud
 
 param (
     [string]$TargetAction = "CAPTCHA_SOLVE",
     [string]$SnipPath = "c:\Users\User\OneDrive\Desktop\workspace\snipaste\active_mission.png",
     [string]$ArchiveDir = "C:\Users\User\OneDrive\Desktop\workspace\archive\failed_missions",
-    [string]$WisdomPath = "c:\Users\User\OneDrive\Desktop\workspace\.openclaw\system\knowledge\faucet_wisdom_vault.md"
+    [string]$WisdomPath = "c:\Users\User\OneDrive\Desktop\workspace\.openclaw\system\knowledge\faucet_wisdom_vault.md",
+    [string]$SkillsDir = "c:\Users\User\OneDrive\Desktop\workspace\.openclaw\system\OpenClaw_Skills"
 )
 
 # 1. HARDWARE IDENTITY LOCK (High-Fidelity Sync)
 $HardwareID = (Get-CimInstance Win32_BaseBoard).SerialNumber
 $VerifiedID = "07C9611_P51E971105" 
 
-if ($HardwareID -eq $VerifiedID) {
-    Write-Host "[SOVEREIGN] Identity Verified: XIN. Locking GPU Performance Model..." -ForegroundColor Green
-    $Model = "my-gpu-gemma"
-} else {
-    Write-Host "[SOVEREIGN] WARNING: Standard performance detected. Engaging Gemma 4 High-Fidelity Sink." -ForegroundColor Yellow
-    $Model = "gemma4:e2b"
-}
+# Use Smart Router for model selection
+$RouterPath = Join-Path $SkillsDir "Sovereign_SmartRouter.ps1"
+$Model = if (Test-Path $RouterPath) { 
+    & powershell -ExecutionPolicy Bypass -File $RouterPath -UserQuery "Solve faucet captcha identify unique icon in snipaste"
+} else { "gemma4:e2b" }
 
 # 2. WISDOM INJECTION (SM-DNA Sync)
 $WisdomContext = if (Test-Path $WisdomPath) { Get-Content $WisdomPath -Raw } else { "" }
+$HermesVault = "c:\Users\User\OneDrive\Desktop\workspace\.openclaw\system\knowledge\hermes_protocol_wisdom.md"
+$HermesMeta = if (Test-Path $HermesVault) { Get-Content $HermesVault -Raw } else { "" }
 
 # 3. TRIGGER SILENT PULSE
 Write-Host "[1/4] Triggering ALV Pulse..." -ForegroundColor Cyan
@@ -31,31 +32,42 @@ Write-Host "[1/4] Triggering ALV Pulse..." -ForegroundColor Cyan
 Start-Sleep -Seconds 2 
 
 if (-not (Test-Path $SnipPath)) {
-    Write-Host "[ERROR] Snip failed. active_mission.png not found." -ForegroundColor Red
+    $Err = "Snip failed. active_mission.png not found."
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $SkillsDir "Sovereign_ErrorClassifier.ps1") -ErrorMessage $Err
+    Write-Host "[ERROR] $Err" -ForegroundColor Red
     exit 1
 }
 
-# 4. LOCAL BRAIN HANDSHAKE (Injected Context)
-$Badge = "(Gemma4:Elite)"
+# 4. HERMES BRAIN HANDSHAKE (Fenced Context)
+$Badge = "(Hermes:V36)"
 Write-Host "[2/4] Delegating Logic to $Badge $Model..." -ForegroundColor Yellow
 
 $Prompt = @"
-[WISDOM_VAULT_ACTIVE]:
-$WisdomContext
+<HERMES_WISDOM>
+$HermesMeta
+</HERMES_WISDOM>
 
-[MISSION]: 
+<FAUCET_WISDOM>
+$WisdomContext
+</FAUCET_WISDOM>
+
+<MISSION_TASK>
 Analyze faucet_state from image. 
-1. FIND the unique icon (odd rotation or different shape).
-2. FIND the 'Verify' or 'Claim' button.
-3. OUTPUT ONLY valid JSON coordinates relative to the 1600x765 window.
+1. START with <REASONING_SCRATCHPAD> to analyze outlier heuristics.
+2. FIND the unique icon (odd rotation or different shape).
+3. FIND the 'Verify' or 'Claim' button.
+4. Use <MISSION_EXECUTION> for valid JSON coordinates relative to the 1600x765 window.
 Format: { "unique_icon": [X, Y], "verify_button": [X, Y], "reasoning": "..." }
+</MISSION_TASK>
 "@
 
 # Run Ollama and capture output
 try {
     $Result = ollama run $Model $SnipPath $Prompt
 } catch {
-    Write-Host "[ERROR] GPU Handshake failed. Check Ollama service." -ForegroundColor Red
+    $Err = "GPU Handshake failed. Check Ollama service: $($_.Exception.Message)"
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $SkillsDir "Sovereign_ErrorClassifier.ps1") -ErrorMessage $Err
+    Write-Host "[ERROR] $Err" -ForegroundColor Red
     exit 1
 }
 
@@ -66,6 +78,7 @@ $Result | Out-File "c:\Users\User\OneDrive\Desktop\workspace\faucet\solver_outpu
 $IsFailure = ($Result -match "FAILED" -or $Result -match "ERROR" -or ($Result -match "NULL"))
 
 if ($IsFailure) {
+    # [Rest of failure logic remains same but improved reporting]
     $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $FailPath = Join-Path $ArchiveDir "fail_$Timestamp"
     New-Item -ItemType Directory -Path $FailPath -Force | Out-Null

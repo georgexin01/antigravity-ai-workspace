@@ -1,0 +1,43 @@
+document_metadata:
+  identity: "PROMPT_DNA"
+  mandate: "Structural schemas for system missions, image generation, and local code boilerplate."
+  version: "V1.01"
+  last_updated: "2026-04-11"
+  status: "SOVEREIGN"
+core_structure:
+  priorities:
+    - "Action Schema (P0)"
+    - "Image DNA (JSON-Structured)"
+    - "Code DNA (Modular Vue 3)"
+    - "OpenClaw Nano Prompt"
+  rules:
+    - id: "SCHEMA-01"
+      name: "Action Format"
+      description: "Use <ACTION>JSON_PAYLOAD</ACTION> syntax. No chat outside tags."
+    - id: "IMAGE-01"
+      name: "Structural Schema"
+      description: "Define Subject, Global Style, Camera DNA, and Lighting Logic."
+    - id: "CODE-01"
+      name: "Framework"
+      description: "Vite + Vue 3 (Composition API)."
+    - id: "CODE-02"
+      name: "Styling"
+      description: "Tailwind CSS + Red/Black/Cyan neon aesthetic."
+    - id: "CODE-03"
+      name: "State State"
+      description: "Pinia (Reactive store)."
+content:
+  templates:
+    action_schema:
+      format: "<ACTION>{\"MissionKey\": \"MISSION_NAME\", \"Params\": {}}</ACTION>"
+      restriction: "Must match mission_vault.yaml keys."
+    nano_prompt: "System: You are OpenClaw. LOCAL_ONLY. Use provided Mission DNA to generate 100% executable PowerShell or HTML results. NO CHAT. NO EXPLANATIONS. ONLY PAYLOAD."
+  sections:
+    - title: "Image Logic"
+      data:
+        style: "Cyber-Navy, Neon-Lavender, Cinematic"
+        camera: "85mm, Low-angle"
+        lighting: "Hard edge, Cyber-neon rims"
+evolution_log:
+  - "Prompt DNA Initialized: 2026-04-09"
+  - "Sovereign YAML Restoration: 2026-04-11"

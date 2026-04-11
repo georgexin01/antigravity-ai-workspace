@@ -1,0 +1,22 @@
+document_metadata:
+  identity: "FAUCET_WISDOM_VAULT"
+  mandate: "Tactical heuristics synthesized by the Phoenix Recursive Protocol for visual solvers."
+  version: "V35.1"
+  last_updated: "2026-04-11"
+  status: "ACTIVE / MANDATORY"
+core_structure:
+  priorities:
+    - "Master Heuristics"
+    - "Visual Outlier Verification"
+  rules:
+    - id: "FS-01"
+      name: "Holistic Outlier Verification"
+      origin: "fail_20260409_153124 (10-Pass Phoenix)"
+      description: "Avoid relying solely on a single anomalous metric. Identification must holistically integrate structural stability, object consistency, and measurable deviations."
+content:
+  sections:
+    - title: "Heuristic Deep Dive"
+      data: "A successful identification integrates structural stability and deviations from the mean to confirm outlier coordinates."
+evolution_log:
+  - "Wisdom Vault Initialized: 2026-04-09"
+  - "Sovereign YAML Restoration: 2026-04-11"

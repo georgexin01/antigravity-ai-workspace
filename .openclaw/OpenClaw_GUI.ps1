@@ -567,7 +567,7 @@ $sideButtons["BtnTasks"].Add_Click({ Invoke-SkillAsync "Task_Scheduler" "Task Sc
 $sideButtons["BtnSearch"].Add_Click({ $InputBox.Text = "[SEARCH] "; $InputBox.Focus(); $InputBox.CaretIndex = $InputBox.Text.Length })
 $sideButtons["BtnKnowledge"].Add_Click({
     $kDir = Join-Path $PSScriptRoot "knowledge"; $sDir = Join-Path $SystemRoot "knowledge"
-    $files = @(); if (Test-Path $kDir) { $files += Get-ChildItem $kDir -Filter "*.md" }; if (Test-Path $sDir) { $files += Get-ChildItem $sDir -Filter "*.md" }
+    $files = @(); if (Test-Path $kDir) { $files += Get-ChildItem $kDir -Filter "*.yaml" }; if (Test-Path $sDir) { $files += Get-ChildItem $sDir -Filter "*.yaml" }
     $list = if ($files.Count) { ($files | ForEach-Object { "- $($_.Name) ($([math]::Round($_.Length/1024,1))KB)" }) -join "`n" } else { "No knowledge files." }
     Add-ChatBubble "KNOWLEDGE VAULT" "Found $($files.Count) files:`n$list" "ai"
 })

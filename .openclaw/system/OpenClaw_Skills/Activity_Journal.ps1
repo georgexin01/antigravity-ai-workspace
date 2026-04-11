@@ -10,7 +10,7 @@ $JournalDir = Join-Path $PSScriptRoot "..\skills_bridge\journal"
 if (-not (Test-Path $JournalDir)) { New-Item -ItemType Directory -Path $JournalDir -Force | Out-Null }
 
 $DateStr = if ($Date) { $Date } else { Get-Date -Format "yyyy-MM-dd" }
-$JournalFile = Join-Path $JournalDir "journal_$DateStr.md"
+$JournalFile = Join-Path $JournalDir "journal_$DateStr.yaml"
 $DiagLog = Join-Path $PSScriptRoot "..\diagnostic.log"
 $ChatLog = Join-Path $PSScriptRoot "..\skills_bridge\chat_log.jsonl"
 $DaemonLog = Join-Path $PSScriptRoot "..\skills_bridge\daemon_log.jsonl"
@@ -24,11 +24,8 @@ switch ($Action.ToUpper()) {
         # From diagnostic log
         if (Test-Path $DiagLog) {
             $logLines = Get-Content $DiagLog | Where-Object { $_ -match "^\[$todayPattern" }
-            $entries += "## Engine Activity`n$($logLines.Count) events logged"
             $queryCount = ($logLines | Where-Object { $_ -match "\[QUERY\]" }).Count
             $skillCount = ($logLines | Where-Object { $_ -match "\[SKILL_RUN\]" }).Count
-            $entries += "- Queries: $queryCount"
-            $entries += "- Skills executed: $skillCount"
         }
 
         # From chat log
@@ -36,7 +33,6 @@ switch ($Action.ToUpper()) {
             $chatLines = Get-Content $ChatLog | Where-Object {
                 if ($_) { try { ($_ | ConvertFrom-Json).timestamp -match $todayPattern } catch { $false } } else { $false }
             }
-            $entries += "`n## Chat Activity`n- Conversations: $($chatLines.Count) messages"
         }
 
         # From daemon log
@@ -44,10 +40,29 @@ switch ($Action.ToUpper()) {
             $daemonLines = Get-Content $DaemonLog | Where-Object {
                 if ($_) { try { ($_ | ConvertFrom-Json).ts -match $todayPattern } catch { $false } } else { $false }
             }
-            $entries += "`n## Daemon Activity`n- Events: $($daemonLines.Count)"
         }
 
-        $journal = "# OpenClaw Activity Journal — $DateStr`n`n$($entries -join "`n")`n`n---`n_Generated: $(Get-Date -Format 'o')_"
+        $journal = @"
+document_metadata:
+  identity: "ACTIVITY_JOURNAL_$DateStr"
+  date: "$DateStr"
+  status: "SOVEREIGN"
+content:
+  sections:
+    - title: "Engine Activity"
+      data:
+        events: $($logLines.Count)
+        queries: $queryCount
+        skills: $skillCount
+    - title: "Chat Activity"
+      data:
+        messages: $($chatLines.Count)
+    - title: "Daemon Activity"
+      data:
+        events: $($daemonLines.Count)
+evolution_log:
+  - "Journal Generated: $(Get-Date -Format 'o')"
+"@
         Set-Content -Path $JournalFile -Value $journal -Force
         Write-Output $journal
     }
@@ -65,7 +80,7 @@ switch ($Action.ToUpper()) {
     }
 
     "FULL" {
-        $journals = Get-ChildItem $JournalDir -Filter "journal_*.md" | Sort-Object Name -Descending | Select-Object -First 7
+        $journals = Get-ChildItem $JournalDir -Filter "journal_*.yaml" | Sort-Object Name -Descending | Select-Object -First 7
         if ($journals.Count -eq 0) { Write-Output "[JOURNAL] No journals found."; break }
         $output = "[ACTIVITY JOURNALS] Last $($journals.Count) days:`n"
         foreach ($j in $journals) {
@@ -77,7 +92,7 @@ switch ($Action.ToUpper()) {
     }
 
     "CLEAR" {
-        $old = Get-ChildItem $JournalDir -Filter "journal_*.md" | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) }
+        $old = Get-ChildItem $JournalDir -Filter "journal_*.yaml" | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) }
         $old | Remove-Item -Force
         Write-Output "[JOURNAL] Cleared $($old.Count) journals older than 30 days."
     }

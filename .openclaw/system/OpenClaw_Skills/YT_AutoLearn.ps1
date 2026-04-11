@@ -109,23 +109,26 @@ try {
 # --- PHASE 5: STORE TO KNOWLEDGE VAULT ---
 $DateStr = Get-Date -Format "yyyyMMdd"
 $SafeTitle = ($Title -replace '[^\w\s-]', '' -replace '\s+', '_').Substring(0, [Math]::Min(40, $Title.Length))
-$OutFile = Join-Path $KnowledgePath "yt_${VideoId}_${DateStr}.md"
+$OutFile = Join-Path $KnowledgePath "yt_${VideoId}_${DateStr}.yaml"
 
 $Content = @"
-# YouTube Learning: $Title
-- **Source**: $Url
-- **Date**: $(Get-Date -Format 'yyyy-MM-dd')
-- **Video ID**: $VideoId
-- **User Note**: $UserNote
-
-## 🧠 Analysis
-$Analysis
-
-## 📼 Raw Transcript (Excerpt)
-$($Transcript.Substring(0, [Math]::Min(1000, $Transcript.Length)))...
-
----
-_YT Auto-Learning Captured: $(Get-Date -Format 'o')_
+document_metadata:
+  identity: "YT_LEARNING_$VideoId"
+  source_url: "$Url"
+  video_id: "$VideoId"
+  date: "$(Get-Date -Format 'yyyy-MM-dd')"
+  category: "YOUTUBE_LEARNING"
+  status: "SOVEREIGN"
+content:
+  title: "$Title"
+  user_note: "$UserNote"
+  analysis: |
+    $($Analysis -replace '"', '\"')
+  raw_transcript_excerpt: |
+    $($Transcript.Substring(0, [Math]::Min(500, $Transcript.Length)).Replace("`n", "`n    ").Replace("`r", ""))
+evolution_log:
+  - "YT Auto-Learning Captured: $(Get-Date -Format 'o')"
+  - "Sovereign YAML Generation: 2026-04-11"
 "@
 
 Set-Content -Path $OutFile -Value $Content -Force
