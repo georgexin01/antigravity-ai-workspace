@@ -52,21 +52,25 @@ function Protect-OClawPrivacy([string]$Payload) {
 }
 
 function Get-OClawContext {
-    $LexPath = Join-Path $script:LocalKnowledge "skills_bridge\user_lexicon.yaml"
-    $Lexicon = if (Test-Path $LexPath) { Get-Content $LexPath -Raw -ErrorAction SilentlyContinue } else { "" }
+    $RulesDir = Join-Path $script:LocalKnowledge "core_rules"
+    
+    # 1. Load Mandatory Mandates (MD)
+    $Mandate = if (Test-Path (Join-Path $RulesDir "SOVEREIGN_MANDATE.md")) { Get-Content (Join-Path $RulesDir "SOVEREIGN_MANDATE.md") -Raw } else { "" }
+    
+    # 2. Load System Rules (YAML)
+    $Rules = if (Test-Path (Join-Path $RulesDir "SYSTEM_RULES.yaml")) { Get-Content (Join-Path $RulesDir "SYSTEM_RULES.yaml") -Raw } else { "" }
+    
+    # 3. Load Model Registry (JSON) for dynamic context
+    $Registry = if (Test-Path (Join-Path $RulesDir "MODEL_REGISTRY.json")) { Get-Content (Join-Path $RulesDir "MODEL_REGISTRY.json") -Raw } else { "" }
 
     $Directive = @"
-[IDENTITY]: OpenClaw V3.1 Sovereign Intelligence.
-[RULES]:
-- Answer directly. No filler words ("Sure", "I understand", "Of course").
-- Be concise, accurate, and helpful.
-- For code: provide working code only, no explanations unless asked.
-- For questions: give the direct answer first, then brief context if needed.
-[CAPABILITIES]: Local GPU inference, browser control (Chrome CDP), file crawling, web search, visual analysis, OCR, code sandbox, window management, git sync, architecture review, 24/7 daemon mode, prompt chains, RAG search.
+[IDENTITY]: OpenClaw V2.0 Sovereign Singularity.
+[BUILD]: Hybrid (MD/YAML/JSON/Moon/XML)
+[RULES]: $Rules
+[MANDATE]: $Mandate
 "@
 
-    if ($Lexicon.Length -gt 500) { $Lexicon = $Lexicon.Substring(0, 500) }
-    return "$Directive`n`nCONTEXT:`n$Lexicon"
+    return "$Directive`n`nREGISTRY_META:`n$Registry"
 }
 
 # --- 3. CONVERSATION HISTORY ---
@@ -158,80 +162,63 @@ function Invoke-OClawQuery([string]$UserMessage, [int]$Tier = 0) {
 # --- 5. TACTICAL MISSION DISPATCHER ---
 function Invoke-OClawMission([string]$MissionKey, $Params) {
     Write-OClawLog "MISSION" $MissionKey
-    switch ($MissionKey) {
-        "READ_FILE" {
-            if ($Params.Path -and (Test-Path $Params.Path)) { return Get-Content $Params.Path -Raw }
-            return "FILE_NOT_FOUND"
-        }
-        "WRITE_FILE" {
-            if ($Params.Path -and $Params.Content) {
-                $dir = Split-Path $Params.Path -Parent
-                if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-                Set-Content -Path $Params.Path -Value $Params.Content -Force
-                return "SUCCESS"
-            }
-            return "MISSING_PARAMS"
-        }
-        "VISUAL_PULSE" { return Invoke-OClawSkill "Visual_Pulse" }
-        "SPEAK" { return Invoke-OClawSkill "Voice_Sovereign" "-Action Speak -Text `"$($Params.Text)`"" }
-        "GIT_SYNC" { return Invoke-OClawSkill "Sovereign_GitSync" }
-        "SECURITY_SCAN" { return Invoke-OClawSkill "Security_Scan" }
-        "ARCHITECT_REVIEW" { return Invoke-OClawSkill "Architect_Review" }
-        "GPU_STATUS" { return Invoke-OClawSkill "Get_GPU_Status" }
-        "MEMORY_GRAPH" { return Invoke-OClawSkill "Memory_Graph" }
-        "WEB_SEARCH" {
-            if ($Params.Query) {
-                try {
-                    $r = Invoke-RestMethod -Uri "http://localhost:8888/search?q=$([uri]::EscapeDataString($Params.Query))&format=json" -TimeoutSec 10
-                    return ($r.results | Select-Object -First 3 | ForEach-Object { "- $($_.title): $($_.url)`n  $($_.content)" }) -join "`n"
-                } catch { return "SearXNG not available." }
-            }
-            return "NO_QUERY"
-        }
-        "BROWSER_START" { return Invoke-OClawSkill "Browser_Control" "-Action START -Url `"$($Params.Url)`"" }
-        "BROWSER_NAVIGATE" { return Invoke-OClawSkill "Browser_Control" "-Action NAVIGATE -Url `"$($Params.Url)`"" }
-        "BROWSER_SCREENSHOT" { return Invoke-OClawSkill "Browser_Control" "-Action SCREENSHOT" }
-        "BROWSER_CLICK" { return Invoke-OClawSkill "Browser_Control" "-Action CLICK -X $($Params.X) -Y $($Params.Y)" }
-        "BROWSER_TYPE" { return Invoke-OClawSkill "Browser_Control" "-Action TYPE -Text `"$($Params.Text)`"" }
-        "BROWSER_JS" { return Invoke-OClawSkill "Browser_Control" "-Action JS -Code `"$($Params.Code)`"" }
-        "BROWSER_FIND" { return Invoke-OClawSkill "Browser_Control" "-Action FIND -Text `"$($Params.Text)`"" }
-        "BROWSER_VISION" { return Invoke-OClawSkill "Browser_Vision" $(if ($Params.Query) { "-Query `"$($Params.Query)`"" } else { "" }) }
-        "FILE_CRAWL" { return Invoke-OClawSkill "File_Crawler" "-Action CRAWL -Path `"$($Params.Path)`"" }
-        "FILE_SEARCH" { return Invoke-OClawSkill "File_Crawler" "-Action SEARCH -Query `"$($Params.Query)`"" }
-        "FILE_READ" { return Invoke-OClawSkill "File_Crawler" "-Action READ -Path `"$($Params.Path)`"" }
-        "DAEMON_STATUS" { return Invoke-OClawSkill "Daemon_Service" "-Action STATUS" }
-        "DAEMON_INSTALL" { return Invoke-OClawSkill "Daemon_Service" "-Action INSTALL" }
-        "HEALTH_CHECK" { return Invoke-OClawSkill "Daemon_Health" }
-        "CODE_RUN" { return Invoke-OClawSkill "Code_Sandbox" "-Code `"$($Params.Code)`" -Language `"$($Params.Language)`"" }
-        "OCR" { return Invoke-OClawSkill "OCR_Extract" "-CaptureScreen" }
-        "WINDOW_LIST" { return Invoke-OClawSkill "Window_Manager" "-Action LIST" }
-        "WINDOW_FOCUS" { return Invoke-OClawSkill "Window_Manager" "-Action FOCUS -Title `"$($Params.Title)`"" }
-        "CLIPBOARD" { return Invoke-OClawSkill "Clipboard_Bridge" "-Action READ" }
-        "RAG_QUERY" { return Invoke-OClawSkill "RAG_Index" "-Action QUERY -Query `"$($Params.Query)`"" }
-        "CHAIN" { return Invoke-OClawSkill "Chain_Executor" "-Chain `"$($Params.Chain)`"" }
-        "NOTIFY" { return Invoke-OClawSkill "Notify_Center" "-Title `"$($Params.Title)`" -Message `"$($Params.Message)`"" }
-        "JOURNAL" { return Invoke-OClawSkill "Activity_Journal" "-Action TODAY" }
-        "WEBUI_STATUS" { return Invoke-OClawSkill "OpenWebUI_Bridge" "-Action STATUS" }
-        "WEBUI_INSTALL" { return Invoke-OClawSkill "OpenWebUI_Bridge" "-Action INSTALL" }
-        "WEBUI_OPEN" { return Invoke-OClawSkill "OpenWebUI_Bridge" "-Action OPEN" }
-        "GATEWAY_STATUS" { return Invoke-OClawSkill "Gateway_Client" "-Action STATUS" }
-        "GATEWAY_CONNECT" { return Invoke-OClawSkill "Gateway_Client" "-Action CONNECT -GatewayUrl `"$($Params.Url)`" -Token `"$($Params.Token)`"" }
-        "GATEWAY_SEND" { return Invoke-OClawSkill "Gateway_Client" "-Action SEND -Message `"$($Params.Message)`"" }
-        "CANVAS_CARD" { return Invoke-OClawSkill "Canvas_Renderer" "-Action CARD -Title `"$($Params.Title)`" -Content `"$($Params.Content)`" -Type `"$($Params.Type)`"" }
-        "CANVAS_TABLE" { return Invoke-OClawSkill "Canvas_Renderer" "-Action TABLE -Title `"$($Params.Title)`" -Data `"$($Params.Data)`"" }
-        "SCREEN_FULL" { return Invoke-OClawSkill "Screen_Capture_Pro" "-Action FULL" }
-        "SCREEN_WINDOW" { return Invoke-OClawSkill "Screen_Capture_Pro" "-Action WINDOW -Title `"$($Params.Title)`"" }
-        "SCREEN_RECORD" { return Invoke-OClawSkill "Screen_Capture_Pro" "-Action RECORD -Duration $($Params.Duration)" }
-        "PIPELINE_RUN" { return Invoke-OClawSkill "Pipeline_Router" "-Action RUN -Message `"$($Params.Message)`"" }
-        "NOTE_CREATE" { return Invoke-OClawSkill "Notes_System" "-Action CREATE -Title `"$($Params.Title)`" -Content `"$($Params.Content)`"" }
-        "NOTE_LIST" { return Invoke-OClawSkill "Notes_System" "-Action LIST" }
-        "NOTE_ENHANCE" { return Invoke-OClawSkill "Notes_System" "-Action ENHANCE -Title `"$($Params.Title)`"" }
-        "TERMINAL" { return Invoke-OClawSkill "Terminal_Exec" "-Action RUN -Command `"$($Params.Command)`"" }
-        "MODEL_COMPARE" { return Invoke-OClawSkill "Multi_Model" "-Action COMPARE -Prompt `"$($Params.Prompt)`"" }
-        "MODEL_BENCHMARK" { return Invoke-OClawSkill "Multi_Model" "-Action BENCHMARK" }
-        "DEEPLINK_REGISTER" { return Invoke-OClawSkill "Deep_Link" "-Action REGISTER" }
-        "ANALYTICS" { return Invoke-OClawSkill "Usage_Analytics" "-Action REPORT" }
-        default {
+    
+    # Mapping table for Mission to Suite/Action
+    $Map = @{
+        "BROWSER_START"    = @{ Suite="Tactical_Suite"; Action="BROWSER_START" }
+        "BROWSER_NAV"      = @{ Suite="Tactical_Suite"; Action="BROWSER_NAV" }
+        "VISUAL_PULSE"     = @{ Suite="Tactical_Suite"; Action="BROWSER_UI" }
+        "OCR"              = @{ Suite="Tactical_Suite"; Action="VISION_OCR" }
+        
+        "GPU_STATUS"       = @{ Suite="Sovereign_Suite"; Action="GPU_STATUS" }
+        "WINDOW_LIST"      = @{ Suite="Sovereign_Suite"; Action="WINDOW_LIST" }
+        "WINDOW_FOCUS"     = @{ Suite="Sovereign_Suite"; Action="WINDOW_FOCUS" }
+        "DAEMON_STATUS"    = @{ Suite="Sovereign_Suite"; Action="DAEMON_STATUS" }
+        
+        "SPEAK"            = @{ Suite="Media_Suite"; Action="VOICE_SPEAK" }
+        "SCREEN_FULL"      = @{ Suite="Media_Suite"; Action="SCREEN_CAPTURE" }
+        "NOTIFY"           = @{ Suite="Media_Suite"; Action="NOTIFY_SEND" }
+        
+        "FILE_CRAWL"       = @{ Suite="Cognition_Suite"; Action="FILE_CRAWL" }
+        "FILE_READ"        = @{ Suite="Cognition_Suite"; Action="FILE_READ" }
+        "PIN_CHUNK"        = @{ Suite="Cognition_Suite"; Action="PIN_CHUNK" }
+        "NOTE_CREATE"      = @{ Suite="Cognition_Suite"; Action="NOTE_CREATE" }
+        "RAG_QUERY"        = @{ Suite="Cognition_Suite"; Action="RAG_QUERY" }
+        "DECOMPOSE"        = @{ Suite="Cognition_Suite"; Action="DECOMPOSE_TASK" }
+        "SURVEY"           = @{ Suite="Cognition_Suite"; Action="SURVEY_CONTEXT" }
+        "BLUEPRINT"        = @{ Suite="Cognition_Suite"; Action="GENERATE_BLUEPRINT" }
+        "PYRAMID"          = @{ Suite="Cognition_Suite"; Action="PYRAMID_DRILL" }
+        "DISCOVERY"        = @{ Suite="Cognition_Suite"; Action="SMART_DISCOVERY" }
+        
+        "AUDIT_UI"         = @{ Suite="Tactical_Suite"; Action="AUDIT_UI" }
+        "GUARDRAIL"        = @{ Suite="Sovereign_Suite"; Action="CHECK_GUARDRAIL" }
+        
+        "GATEWAY_CONNECT"  = @{ Suite="Bridge_Suite"; Action="GATEWAY_CONNECT" }
+        "CODE_RUN"         = @{ Suite="Bridge_Suite"; Action="CODE_RUN" }
+        "PIPELINE_RUN"     = @{ Suite="Bridge_Suite"; Action="PIPELINE_RUN" }
+        "MODEL_COMPARE"    = @{ Suite="Bridge_Suite"; Action="MODEL_COMPARE" }
+        "SWARM_EXECUTE"    = @{ Suite="Bridge_Suite"; Action="SWARM_EXECUTE" }
+        "HANDOFF"          = @{ Suite="Bridge_Suite"; Action="TEAM_HANDOFF" }
+    }
+
+    if ($Map.ContainsKey($MissionKey)) {
+        $T = $Map[$MissionKey]
+        $Args = "-Action $($T.Action)"
+        if ($Params.Url) { $Args += " -Url `"$($Params.Url)`"" }
+        if ($Params.Text) { $Args += " -Text `"$($Params.Text)`"" }
+        if ($Params.Code) { $Args += " -Code `"$($Params.Code)`"" }
+        if ($Params.Path) { $Args += " -Path `"$($Params.Path)`"" }
+        if ($Params.Title) { $Args += " -Title `"$($Params.Title)`"" }
+        if ($Params.Content) { $Args += " -Content `"$($Params.Content)`"" }
+        
+        return Invoke-OClawSkill $T.Suite $Args
+    }
+
+    # Fallback to direct skill if not mapped
+    $SkillPath = Join-Path "$script:LocalKnowledge\OpenClaw_Skills" "$MissionKey.ps1"
+    if (Test-Path $SkillPath) { return Invoke-OClawSkill $MissionKey }
+    return "UNKNOWN_MISSION: $MissionKey"
+}
             $SkillPath = Join-Path "$script:LocalKnowledge\OpenClaw_Skills" "$MissionKey.ps1"
             if (Test-Path $SkillPath) { return Invoke-OClawSkill $MissionKey }
             return "UNKNOWN_MISSION: $MissionKey"

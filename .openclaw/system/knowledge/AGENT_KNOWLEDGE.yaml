@@ -1,0 +1,15 @@
+document_metadata:
+  identity: "WORKSPACE_AGENT_KNOWLEDGE"
+  mandate: "Local Workspace Anchor for Agentic Trigger Protocols."
+  version: "V1.0"
+  status: "ACTIVE"
+
+protocol_definitions:
+  - command: "ai agent knowledge"
+    action: "IMMEDIATE_SYNC"
+    target_path: "C:/Users/User/.gemini/knowledge"
+    description: "Triggers a high-density audit and synchronization of the global agent brain with the local workspace context."
+
+workspace_integration:
+  - "This file serves as the local 1:1 parity anchor for sovereign intelligence behavior."
+  - "Any updates to the global .gemini knowledge must be mirrored or referenced here for local model awareness (Gemma-4)."
